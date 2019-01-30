@@ -137,7 +137,7 @@ levels(sex)
 library(lubridate)
 my_date <- ymd("2015-01-01")
 my_date
-str(my_date)
+str(my_date)c
 
 my_date <- ymd (paste("2015, "05", "17", sep = "-"))
  my_date
