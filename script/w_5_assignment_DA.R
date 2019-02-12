@@ -1,6 +1,6 @@
 #STEP 2:
 library(tidyverse)
-surveys<-read_csv("data/portal_data_joined.csv") %>%
+surveys<-read_csv("data/portal_data_joined.csv")
 
 #STEP 3:
 #subset surveys for weights below 60 and above 3
@@ -39,10 +39,33 @@ weight_NA_record_id <-surveys %>%
   summarize(sum_na=sum(is.na(weight))) %>%
   arrange(desc(sum_na)) %>% view
 
-weight_NA_month <- surveys %>%
+weight_NA_month <-surveys %>%
   group_by(day) %>% 
   summarize(sum_na=sum(is.na(weight))) %>% 
   arrange(desc(sum_na)) %>% view
+
+weight_NA_taxa <-surveys %>%
+  group_by (taxa) %>% 
+  summarize(sum_na=sum(is.na(weight))) %>% 
+  arrange(desc(sum_na)) %>% view
+
+surveys %>% 
+  filter(taxa == "Rodent") %>% 
+  tally()
+
+surveys %>% 
+  filter(taxa == "Bird") %>% 
+  tally()
+
+surveys %>% 
+  filter(taxa == "Rabbit") %>% 
+  tally()
+
+surveys %>% 
+  filter(taxa == "Reptile") %>% 
+  tally()
+
+# There are a disproportinate amount of NA's in the rodent taxa
 
 #STEP 6: Within surveys: 
 #- remove the rows where weight is NA 
@@ -58,17 +81,23 @@ surveys_avg_weight <- surveys %>%
 # mutate adds new variables and preserves existing ones
   mutate(avg_weight=mean(weight)) %>% 
 # select keeps all the variables you mention
-  select(species_id, sex, weight, avg_weight) %>% view
+  select(species_id, sex, weight, avg_weight) %>%
 # nrow counts the number of rows (should be 32,283)
-  nrow(surveys_avg_weight)
-  
+  nrow(surveys_avg_weight) %>% view
+
 #STEP 7: Challenge: Take surveys_avg_weight and add a new column called above_average that contains logical values stating whether or not a row’s weight is above average for its species+sex combination (recall the new column we made for this tibble).
   surveys_avg_weight %>% 
   mutate(above_avg=weight>avg_weight) %>%
   arrange(desc(above_avg)) %>% view
-#how would I count the number of true and false answers?
+#Pondering aloud: how would I count the number of true and false answers?
   
   
 #STEP 8: Extra Challenge: Figure out what the scale function does, and add a column to surveys that has the scaled weight, by species. Then sort by this column and look at the relative biggest and smallest individuals. Do any of them stand out as particularly big or small?
-##To finish....
 
+  surveys %>% 
+    group_by(species_id) %>% 
+    mutate(scaled_weight = scale(weight)) %>% 
+    filter(!is.na(scaled_weight)) %>% 
+    arrange(scaled_weight) %>% View
+  
+#The scale function determines how many standard deviations a data point is from the mean for the respective group (species ID in this case). The largest observed weight (relative to species) was Chaetodipus penicillatus and the smallest (relative to species) was Dipodomys merriami.
