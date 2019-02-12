@@ -5,8 +5,10 @@ surveys<-read_csv("data/portal_data_joined.csv")
 #STEP 3:
 #subset surveys for weights below 60 and above 3
 surveys_subset<-surveys%>% 
-filter(weight < 60) %>% 
-  filter(weight > 30)
+  filter(weight < 60) %>% 
+  filter(weight > 30) %>% 
+  group_by(weight) %>% 
+  arrange(desc(surveys_subset)) %>% view ()
 
 #print the first 6 rows of the subsetted dataset
 head (surveys_subset) 
@@ -81,14 +83,17 @@ surveys_avg_weight <- surveys %>%
 # mutate adds new variables and preserves existing ones
   mutate(avg_weight=mean(weight)) %>% 
 # select keeps all the variables you mention
-  select(species_id, sex, weight, avg_weight) %>%
+  select(species_id, sex, weight, avg_weight) %>% view ()
 # nrow counts the number of rows (should be 32,283)
-  nrow(surveys_avg_weight) %>% view
+  nrow(surveys_avg_weight)
 
 #STEP 7: Challenge: Take surveys_avg_weight and add a new column called above_average that contains logical values stating whether or not a row’s weight is above average for its species+sex combination (recall the new column we made for this tibble).
   surveys_avg_weight %>% 
   mutate(above_avg=weight>avg_weight) %>%
-  arrange(desc(above_avg)) %>% view
+  arrange(desc(above_avg)) %>% view ()
+  
+  nrow(surveys_avg_weight)
+  
 #Pondering aloud: how would I count the number of true and false answers?
   
   
